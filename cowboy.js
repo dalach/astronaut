@@ -55,10 +55,51 @@ for (var i = 0; i < howManyCircles; i++)
   }
 };
 
+var player = new (function(){
+  var that = this;
+  that.image = new Image();
+  that.image.src = "cowboy.png";
+
+  that.width = 65;
+  that.height = 95;
+  that.X = 0;
+  that.Y = 0;
+  that.frames = 1;
+  that.actualFrame = 0;
+  that.interval = 0;
+
+  //methods
+  that.setPosition = function(x,y){
+    that.X = x;
+    that.Y = y;
+  }
+  that.draw = function(){
+    try {
+        ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
+//3rd agument needs to be multiplied by number of frames, so on each loop different frame will be cut from the source image
+    } catch (e) {};
+
+    if (that.interval == 4 ) {
+        if (that.actualFrame == that.frames) {
+            that.actualFrame = 0;
+        } else {
+            that.actualFrame++;
+        }
+        that.interval = 0;
+    }
+    that.interval++;
+    }
+})();
+
+player.setPosition(~~((width-player.width)/2), ~~((height - player.height)/2));
+
+
+
 var GameLoop = function(){
   clear();
   MoveCircles(5);
   DrawCircles();
+  player.draw();
   gLoop = setTimeout(GameLoop, 1000 / 50);
 }
 GameLoop();
