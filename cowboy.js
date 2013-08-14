@@ -68,11 +68,59 @@ var player = new (function(){
   that.actualFrame = 0;
   that.interval = 0;
 
+  that.isJumping = false;
+  that.isFalling = false;
+
+  that.jumpSpeed = 0;
+  that.fallSpeed = 0;
+
   //methods
   that.setPosition = function(x,y){
     that.X = x;
     that.Y = y;
   }
+  that.jump = function() {
+//initiation of the jump
+if (!that.isJumping && !that.isFalling) {
+//if objects isn't currently jumping or falling (preventing of 'double jumps', or bouncing from the air
+that.fallSpeed = 0;
+that.isJumping = true;
+that.jumpSpeed = 17;
+// initial velocity
+}
+}
+
+that.checkJump = function() {
+//when 'jumping' action was initiated by jump() method, initiative is taken by this one.
+that.setPosition(that.X, that.Y - that.jumpSpeed);
+//move object by number of pixels equal to current value of 'jumpSpeed'
+that.jumpSpeed--;
+//and decease it (simulation of gravity)
+if (that.jumpSpeed == 0) {
+//start to falling, similar to jump() function
+that.isJumping = false;
+that.isFalling = true;
+that.fallSpeed = 1;
+}
+
+}
+
+  that.checkFall = function(){
+    if (that.Y < height - that.height) {
+      that.setPosition(that.X, that.Y + that.fallSpeed);
+      that.fallSpeed++;
+    } else {
+      that.fallStop();
+    }
+  }
+
+  that.fallStop = function(){
+  //stop falling, start jumping again
+    that.isFalling = false;
+    that.fallSpeed = 0;
+    that.jump();
+  }
+
   that.draw = function(){
     try {
         ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
@@ -92,13 +140,17 @@ var player = new (function(){
 })();
 
 player.setPosition(~~((width-player.width)/2), ~~((height - player.height)/2));
-
+player.jump();
 
 
 var GameLoop = function(){
   clear();
   MoveCircles(5);
   DrawCircles();
+  if (player.isJumping)
+    player.checkJump();
+  if (player.isFalling)
+    player.checkFall();
   player.draw();
   gLoop = setTimeout(GameLoop, 1000 / 50);
 }
