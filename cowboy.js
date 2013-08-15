@@ -121,6 +121,19 @@ that.fallSpeed = 1;
     that.jump();
   }
 
+  that.moveLeft = function(){
+    if (that.X > 0) {
+      that.setPosition(that.X - 5, that.Y);
+    }
+  }
+
+  that.moveRight = function(){
+    if (that.X + that.width < width) {
+      that.setPosition(that.X + 5, that.Y);
+    }
+  }
+
+
   that.draw = function(){
     try {
         ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
@@ -142,6 +155,14 @@ that.fallSpeed = 1;
 player.setPosition(~~((width-player.width)/2), ~~((height - player.height)/2));
 player.jump();
 
+document.onmousemove = function(e){
+  if (player.X + c.offsetLeft > e.pageX) {
+    player.moveLeft();
+  } else if (player.X + c.offsetLeft < e.pageX) {
+    player.moveRight();
+  }
+
+}
 
 var GameLoop = function(){
   clear();
